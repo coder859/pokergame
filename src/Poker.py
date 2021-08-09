@@ -568,4 +568,4 @@ else:
     for x in l:
         CompareHands.append(x)
     c = compare(CompareHands)
-    print(f"The winner/s are {str(c)[1:-1]}!")
+    print(f"The winner(s) are {str(c)[1:-1]}!")
