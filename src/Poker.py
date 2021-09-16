@@ -91,17 +91,16 @@ def k4(d):
         target = {}
         big_counted = False
         for x in big:
-            if x not in a1:
-                a1[x] = 1
-            else:
-                a1[x] += 1
-        for x in a1:
-            count += 1
-            for y in b:
-                if x in y:
-                    if count == 1:
-                        if len(y[x]) == 4:
-                            target = copy.copy(y)
+            break
+        x1 = big[-1]
+        for y in b:
+            if x in y and len(y[x]) == 4:
+                g = y.get(x1)
+                if g and len(y[x1]) == 1:
+                    target = copy.copy(y)
+                    break
+                else:
+                    continue
         hand = []
         while len(hand) != 5:
             for x in target:
@@ -119,6 +118,18 @@ def k4(d):
 
 
 def k3(d):
+    b = []
+    b1 = {}
+    for x in d:
+        for y in x:
+            if y % 20 not in b1:
+                b1[y % 20] = [y]
+            else:
+                if y not in b1[y % 20]:
+                    b1[y % 20].append(y)
+        if b1 not in b:
+            b.append(copy.copy(b1))
+        b1.clear()
     a = {}
     triple = []
     kind3 = []
@@ -146,25 +157,41 @@ def k3(d):
         i.clear()
         a.clear()
 
-    if len(triple) == 1:
-        return triple
-    elif len(triple) > 1:
+    if len(triple) > 1:
         big = triple[0]
-        while len(triple) != 1:
-            for c in range(0, 5):
-                for y in triple:
-                    if y[c] == big[c]:
-                        continue
-                    if y[c] > big[c]:
-                        big = y
-                        triple.remove(y)
-                        if len(triple) == 1:
-                            return big
-                    elif y[c] < big[c]:
-                        triple.remove(y)
-                        if len(triple) == 1:
-                            return big
-        return big
+        flag = False
+        for c in range(0, 5):
+            for y in triple:
+                if len(triple) == 1:
+                    break
+                if y[c] > big[c]:
+                    big = y
+                    if len(triple) == 1:
+                        break
+                elif y[c] < big[c]:
+                    flag = True
+                    if len(triple) == 1:
+                        break
+                else:
+                    continue
+                if not flag:
+                    break
+        a1 = {}
+        count = 0
+        target = {}
+        big_counted = False
+        for x in big:
+            if x not in a1:
+                a1[x] = 1
+            else:
+                a1[x] += 1
+        for x in a1:
+            count += 1
+            for y in b:
+                if x in y:
+                    if count == 1:
+                        if len(y[x]) == 3:
+                            target = copy.copy(y)
     else:
         return False
 
@@ -500,11 +527,11 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          73: "DK", 74: "DA"}
 CompareHands = []
 # individual cards, ordered by the player:
-card_groups = [[63, 43], [25, 27]]
+card_groups = [[63, 43], [25, 45]]
 # cards on the table:
 common = [42, 65, 23, 2, 5]
-# [3, 3], [5, 7]
-# [2, 5, 3, 2, 5]
+# [3, 3], [5, 5]
+# [2, 14, 3, 2, 5]
 
 # makes the player id, hand type, and hand.
 for x in card_groups:
