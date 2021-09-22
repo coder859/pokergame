@@ -88,31 +88,42 @@ def k4(d):
                     break
         a1 = {}
         count = 0
-        target = {}
-        big_counted = False
+        targets = []
         for x in big:
-            break
-        x1 = big[-1]
-        for y in b:
-            if x in y and len(y[x]) == 4:
-                g = y.get(x1)
-                if g and len(y[x1]) == 1:
-                    target = copy.copy(y)
-                    break
-                else:
-                    continue
+            if x not in a1:
+                a1[x] = 1
+            else:
+                a1[x] += 1
+        for x in a1:
+            count += 1
+            for y in b:
+                if x in y and len(y[x]) == 4:
+                    targets.append(copy.copy(y))
         hand = []
-        while len(hand) != 5:
-            for x in target:
-                if len(target[x]) == 4:
-                    hand = hand + target[x]
+        hands = []
+        for x in targets:
+            big_counted = False
+            for y in x:
+                if len(x[y]) == 4:
+                    hand = hand + x[y]
                     big_counted = True
                 else:
                     if big_counted:
-                        hand.append(x)
+                        hand += (x[y])
                         break
-        return hand
-
+            hands.append(copy.copy(hand))
+            hand.clear()
+        big = hands[0]
+        for c in range(0, 5):
+            for y in hands:
+                if y[c] > big[c]:
+                    big = y
+                    flag = True
+                else:
+                    continue
+                if not flag and c == 4:
+                    return big
+        return big
     else:
         return False
 
@@ -177,21 +188,46 @@ def k3(d):
                 if not flag:
                     break
         a1 = {}
-        count = 0
-        target = {}
-        big_counted = False
+        targets = []
         for x in big:
             if x not in a1:
                 a1[x] = 1
             else:
                 a1[x] += 1
         for x in a1:
-            count += 1
             for y in b:
-                if x in y:
-                    if count == 1:
-                        if len(y[x]) == 3:
-                            target = copy.copy(y)
+                if x in y and len(y[x]) == 3:
+                    targets.append(copy.copy(y))
+        hand = []
+        two = []
+        hands = []
+        for x in targets:
+            big_counted = False
+            for y in x:
+                if len(x[y]) == 3:
+                    hand = hand + x[y]
+                    big_counted = True
+                else:
+                    if big_counted:
+                        two.append(x[y])
+                        if len(two) == 2:
+                            hand += two
+                            break
+            hands.append(copy.copy(hand))
+            hand.clear()
+            two.clear()
+
+        big = hands[0]
+        for c in range(0, 5):
+            for y in hands:
+                if y[c] > big[c]:
+                    big = y
+                    flag = True
+                else:
+                    continue
+                if not flag and c == 4:
+                    return big
+        return big
     else:
         return False
 
@@ -513,7 +549,6 @@ def compare(c):
 l = []
 t = []
 a = {}
-m = 0
 m1 = []
 hands = {1: "High Card", 2: "Pair", 3: "Two Pair", 4: "Three of a Kind", 5: "Straight", 6: "Flush", 7: "Full House",
          8: "Four of a Kind", 9: "Straight Flush", 10: "Royal Flush"}
@@ -527,11 +562,11 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          73: "DK", 74: "DA"}
 CompareHands = []
 # individual cards, ordered by the player:
-card_groups = [[63, 43], [25, 45]]
+card_groups = [[63, 43], [25, 5]]
 # cards on the table:
-common = [42, 65, 23, 2, 5]
+common = [42, 65, 23, 4, 27]
 # [3, 3], [5, 5]
-# [2, 14, 3, 2, 5]
+# [2, 5, 3, 4, 7]
 
 # makes the player id, hand type, and hand.
 for x in card_groups:
@@ -583,14 +618,17 @@ for x in l:
     a[x[0]] = x[1]
 
 for x in l:
+    m1.append(x[1])
+m = max(m1)
+
+for x in l:
     for y in x:
         if x.index(y) == 1:
             if y < m:
                 l.remove(x)
 
 if len(l) == 1:
-    print(
-        f"The winner is Player {str(l[0][0])}! His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
+    print(f"The winner is Player {str(l[0][0])}! His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
 else:
     for x in l:
         CompareHands.append(x)
