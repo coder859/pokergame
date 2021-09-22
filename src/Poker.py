@@ -87,43 +87,31 @@ def k4(d):
                 if not flag:
                     break
         a1 = {}
-        count = 0
-        targets = []
+        target = {}
+        big_counted = False
         for x in big:
-            if x not in a1:
-                a1[x] = 1
-            else:
-                a1[x] += 1
-        for x in a1:
-            count += 1
-            for y in b:
-                if x in y and len(y[x]) == 4:
-                    targets.append(copy.copy(y))
+            break
+        x1 = big[-1]
+        for y in b:
+            if x in y and len(y[x]) == 4:
+                g = y.get(x1)
+                if g:
+                    target = copy.copy(y)
+                    break
+                else:
+                    continue
         hand = []
-        hands = []
-        for x in targets:
-            big_counted = False
-            for y in x:
-                if len(x[y]) == 4:
-                    hand = hand + x[y]
+        while len(hand) != 5:
+            for x in target:
+                if len(target[x]) == 4:
+                    hand = hand + target[x]
                     big_counted = True
                 else:
                     if big_counted:
-                        hand += (x[y])
+                        hand.append(x)
                         break
-            hands.append(copy.copy(hand))
-            hand.clear()
-        big = hands[0]
-        for c in range(0, 5):
-            for y in hands:
-                if y[c] > big[c]:
-                    big = y
-                    flag = True
-                else:
-                    continue
-                if not flag and c == 4:
-                    return big
-        return big
+        return hand
+
     else:
         return False
 
@@ -151,6 +139,7 @@ def k3(d):
                 a[y % 20] = 1
             else:
                 a[y % 20] += 1
+
         if len(a) == 3:
             for y in a:
                 if a[y] == 3:
@@ -160,6 +149,7 @@ def k3(d):
                 elif a[y] == 1:
                     i.append(y)
         else:
+            a.clear()
             continue
         i.sort()
         if len(kind3 + i) == 5:
@@ -187,56 +177,51 @@ def k3(d):
                     continue
                 if not flag:
                     break
-        a1 = {}
-        targets = []
-        for x in big:
-            if x not in a1:
-                a1[x] = 1
-            else:
-                a1[x] += 1
-        for x in a1:
-            for y in b:
-                if x in y and len(y[x]) == 3:
-                    targets.append(copy.copy(y))
+        x = big[0]
+        x1 = big[-1]
+        x2 = big[-2]
+        target = {}
+        big_counted = False
+        for y in b:
+            if x in y and len(y[x]) == 3 and y.get(x1) and y.get(x2):
+                target = copy.copy(y)
         hand = []
-        two = []
-        hands = []
-        for x in targets:
-            big_counted = False
-            for y in x:
-                if len(x[y]) == 3:
-                    hand = hand + x[y]
+        r = []
+        while len(hand) != 5:
+            for x in target:
+                if len(target[x]) == 3:
+                    hand += target[x]
                     big_counted = True
                 else:
                     if big_counted:
-                        two.append(x[y])
-                        if len(two) == 2:
-                            hand += two
+                        r += target[x]
+                        if len(r) == 2:
+                            r.sort()
+                            hand += r
                             break
-            hands.append(copy.copy(hand))
-            hand.clear()
-            two.clear()
-
-        big = hands[0]
-        for c in range(0, 5):
-            for y in hands:
-                if y[c] > big[c]:
-                    big = y
-                    flag = True
-                else:
-                    continue
-                if not flag and c == 4:
-                    return big
-        return big
+        return hand
     else:
         return False
 
 
 def pair(d):
+    b = []
+    b1 = {}
+    for x in d:
+        for y in x:
+            if y % 20 not in b1:
+                b1[y % 20] = [y]
+            else:
+                if y not in b1[y % 20]:
+                    b1[y % 20].append(y)
+        if b1 not in b:
+            b.append(copy.copy(b1))
+        b1.clear()
     p = []
     p1 = []
     i = []
     a = {}
+    big_counted = False
     for x in d:
         single = False
         for y in x:
@@ -245,35 +230,68 @@ def pair(d):
             else:
                 a[y % 20] += 1
         for y in a:
-            if y == 2:
+            if a[y] == 2:
                 if not single:
                     single = True
                     p1.append(y)
                     p1.append(y)
-            elif y == 1:
-                i.append(y)
-        i.sort()
+                    big_counted = True
+            elif a[y] == 1:
+                if big_counted:
+                    i.append(y)
+        i.sort(reverse=True)
         if len(p1 + i) == 5:
             p.append(p1 + i)
         p1.clear()
         i.clear()
         a.clear()
+        big_counted = False
 
     if len(p) == 1:
         return p
     elif len(p) > 1:
         big = p[0]
-        while len(p) != 1:
-            for c in range(0, 5):
-                for y in p:
-                    if y == big:
-                        continue
-                    if y[c] > big[c]:
-                        big = y
-                        p.remove(y)
-                    elif y[c] < big[c]:
-                        p.remove(y)
-        return big
+        flag = False
+        for c in range(0, 5):
+            for y in p:
+                if len(p) == 1:
+                    break
+                if y[c] > big[c]:
+                    big = y
+                    if len(p) == 1:
+                        break
+                elif y[c] < big[c]:
+                    flag = True
+                    if len(p) == 1:
+                        break
+                else:
+                    continue
+                if not flag:
+                    break
+        x = big[0]
+        x1 = big[-1]
+        x2 = big[-2]
+        x3 = big[-3]
+        target = {}
+        big_counted = False
+        for y in b:
+            if x in y and len(y[x]) == 2 and y.get(x1) and y.get(x2) and y.get(x3):
+                target = copy.copy(y)
+        hand = []
+        r = []
+        while len(hand) != 5:
+            for x in target:
+                if len(target[x]) == 2:
+                    hand += target[x]
+                    big_counted = True
+                else:
+                    if big_counted:
+                        r += target[x]
+                        if len(r) == 3:
+                            r.sort()
+                            hand += r
+                            break
+        return hand
     else:
         return False
 
@@ -307,10 +325,11 @@ def straight(d):
     a = []
     b = 0
     for x in d:
+        x1 = copy.copy(x)
         for y in x:
-            x[x.index(y)] = y % 20
-        x.sort()
-        if x[0] % 20 == x[1] % 20 - 1 == x[2] % 20 - 2 == x[3] % 20 - 3 == x[4] % 20 - 4 or x == [2, 3, 4, 5, 14]:
+            x1[x1.index(y)] = y % 20
+        x1.sort()
+        if x1[0] % 20 == x1[1] % 20 - 1 == x1[2] % 20 - 2 == x1[3] % 20 - 3 == x1[4] % 20 - 4 or x1 == [2, 3, 4, 5, 14]:
             a.append(x)
             continue
 
@@ -495,6 +514,18 @@ def straight_flush(d):
 
 
 def high_card(d):
+    b = []
+    b1 = {}
+    for x in d:
+        for y in x:
+            if y % 20 not in b1:
+                b1[y % 20] = [y]
+            else:
+                if y not in b1[y % 20]:
+                    b1[y % 20].append(y)
+        if b1 not in b:
+            b.append(copy.copy(b1))
+        b1.clear()
     big = d[0]
     big.sort(reverse=True)
     for c in range(0, 5):
@@ -549,6 +580,7 @@ def compare(c):
 l = []
 t = []
 a = {}
+m = 0
 m1 = []
 hands = {1: "High Card", 2: "Pair", 3: "Two Pair", 4: "Three of a Kind", 5: "Straight", 6: "Flush", 7: "Full House",
          8: "Four of a Kind", 9: "Straight Flush", 10: "Royal Flush"}
@@ -562,11 +594,11 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          73: "DK", 74: "DA"}
 CompareHands = []
 # individual cards, ordered by the player:
-card_groups = [[63, 43], [25, 5]]
+card_groups = [[25, 47], [3, 27]]
 # cards on the table:
-common = [42, 65, 23, 4, 27]
-# [3, 3], [5, 5]
-# [2, 5, 3, 4, 7]
+common = [42, 14, 23, 26, 5]
+# [3, 7], [5, 7]
+# [2, 14, 3, 6, 5]
 
 # makes the player id, hand type, and hand.
 for x in card_groups:
@@ -617,10 +649,7 @@ for x in card_groups:
 for x in l:
     a[x[0]] = x[1]
 
-for x in l:
-    m1.append(x[1])
-m = max(m1)
-
+m = max(a.values())
 for x in l:
     for y in x:
         if x.index(y) == 1:
@@ -628,7 +657,7 @@ for x in l:
                 l.remove(x)
 
 if len(l) == 1:
-    print(f"The winner is Player {str(l[0][0])}! His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
+    print(f"The winner is Player {str(l[0][0])}. His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
 else:
     for x in l:
         CompareHands.append(x)
