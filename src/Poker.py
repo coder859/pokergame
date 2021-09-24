@@ -6,10 +6,15 @@ def decks(m, c):
     # Makes all possible hands
 
     a = list(m + c)
+    l = lambda a, sort_func: sorted(a, key=sort_func)
+    sort_func = lambda a: a % 20
     d = []
     z = combinations(a, 5)
     for x in z:
-        d.append(list(x))
+        x1 = list(x)
+        x1 = l(x1, sort_func)
+        d.append(x1[::-1])
+    print(d)
     return d
 
 
@@ -526,19 +531,45 @@ def high_card(d):
         if b1 not in b:
             b.append(copy.copy(b1))
         b1.clear()
-    big = d[0]
-    big.sort(reverse=True)
+
+    d1 = []
+    for x in d:
+        x1 = copy.copy(x)
+        for y in x1:
+            x1[x1.index(y)] = y % 20
+        d1.append(x1)
+    big = d1[0]
+    flag = False
     for c in range(0, 5):
-        for x in d:
-            x.sort(reverse=True)
-            if x == big:
+        for y in d1:
+            if len(d1) == 1:
+                break
+            if y[c] > big[c]:
+                big = y
+                if len(d1) == 1:
+                    break
+            elif y[c] < big[c]:
+                flag = True
+                if len(d1) == 1:
+                    break
+            else:
                 continue
-            if x[c] > big[c]:
-                big = x
-                d.remove(x)
-            elif x[c] < big[c]:
-                d.remove(x)
-    return big
+            if not flag:
+                break
+    x = big[0]
+    x1 = big[-1]
+    x2 = big[-2]
+    x3 = big[-3]
+    x4 = big[-4]
+    target = {}
+    for y in b:
+        if y.get(x) and y.get(x1) and y.get(x2) and y.get(x3) and y.get(x4):
+            target = copy.copy(y)
+    hand = []
+    while len(hand) != 5:
+        for x in target:
+            hand += target[x]
+    return hand
 
 
 def compare(c):
@@ -597,8 +628,8 @@ CompareHands = []
 card_groups = [[25, 47], [3, 27]]
 # cards on the table:
 common = [42, 14, 23, 26, 5]
-# [3, 7], [5, 7]
-# [2, 14, 3, 6, 5]
+""" [3, 7], [5, 7]
+    [2, 14, 3, 6, 5] """
 
 # makes the player id, hand type, and hand.
 for x in card_groups:
