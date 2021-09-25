@@ -14,21 +14,17 @@ def decks(m, c):
         x1 = list(x)
         x1 = l(x1, sort_func)
         d.append(x1[::-1])
-    print(d)
     return d
 
 
 def royal_flush(d):
     hand = []
     for x in d:
-        x.sort()
-        if x[0] % 20 == 10 and x[1] % 20 == 11 and x[2] % 20 == 12 and x[3] % 20 == 13 and x[4] % 20 == 14 \
+        if x[0] % 20 == 14 and x[1] % 20 == 13 and x[2] % 20 == 12 and x[3] % 20 == 11 and x[4] % 20 == 10 \
                 and int(x[0] / 20) == int(x[1] / 20) == int(x[2] / 20) == int(x[3] / 20) == int(x[4] / 20):
-            hand = x
+            return hand
         else:
             continue
-    if hand:
-        return hand
     return False
 
 
@@ -625,9 +621,9 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          73: "DK", 74: "DA"}
 CompareHands = []
 # individual cards, ordered by the player:
-card_groups = [[25, 47], [3, 27]]
+card_groups = [[10, 32], [13, 27]]
 # cards on the table:
-common = [42, 14, 23, 26, 5]
+common = [49, 43, 64, 62, 14]
 """ [3, 7], [5, 7]
     [2, 14, 3, 6, 5] """
 
@@ -692,5 +688,5 @@ if len(l) == 1:
 else:
     for x in l:
         CompareHands.append(x)
-    c = compare(CompareHands)
+        c = compare(CompareHands)
     print(f"The winner(s) are {str(c)[1:-1]}!")
