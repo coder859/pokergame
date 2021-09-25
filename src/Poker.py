@@ -688,5 +688,5 @@ if len(l) == 1:
 else:
     for x in l:
         CompareHands.append(x)
-        c = compare(CompareHands)
+    c = compare(CompareHands)
     print(f"The winner(s) are {str(c)[1:-1]}!")
