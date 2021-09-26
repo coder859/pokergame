@@ -248,9 +248,7 @@ def pair(d):
         a.clear()
         big_counted = False
 
-    if len(p) == 1:
-        return p
-    elif len(p) > 1:
+    if len(p) > 1:
         big = p[0]
         flag = False
         for c in range(0, 5):
@@ -324,7 +322,7 @@ def flush(d):
 
 def straight(d):
     a = []
-    b = 0
+    m = 0
     for x in d:
         x1 = copy.copy(x)
         for y in x:
@@ -333,14 +331,17 @@ def straight(d):
         if x1[0] % 20 == x1[1] % 20 - 1 == x1[2] % 20 - 2 == x1[3] % 20 - 3 == x1[4] % 20 - 4 or x1 == [2, 3, 4, 5, 14]:
             a.append(x)
             continue
-
-    for x in a:
-        if x[0] > b:
-            b = x[0]
-    for x in a:
-        if x[0] == b:
+    if len(a) == 1:
+        for x in a:
             return x
-    return False
+    elif len(a) > 1:
+        for x in a:
+            if x[0] % 20 > m:
+                m = x[0] % 20
+        for big in a:
+            if big[0] == m:
+                return big
+
 
 
 def full_house(d):
@@ -440,6 +441,18 @@ def full_house(d):
 
 
 def tp(d):
+    b = []
+    b1 = {}
+    for x in d:
+        for y in x:
+            if y % 20 not in b1:
+                b1[y % 20] = [y]
+            else:
+                if y not in b1[y % 20]:
+                    b1[y % 20].append(y)
+        if b1 not in b:
+            b.append(copy.copy(b1))
+        b1.clear()
     a = {}
     p2 = []
     p = []
@@ -466,23 +479,47 @@ def tp(d):
         p.clear()
         i.clear()
         a.clear()
-    if len(p2) == 1:
-        return [x for x in p2]
-    elif len(p2) > 1:
+    if len(p2) > 1:
         big = p2[0]
-        while len(p2) != 1:
-            for c in range(0, 5):
-                for y in p2:
-                    if y[c] == big[c]:
-                        continue
-                    if y[c] > big[c]:
-                        big = y
-                        p2.remove(y)
-                    elif y[c] < big[c]:
-                        p2.remove(y)
-                        if len(p2) == 1:
-                            return big
-        return big
+        flag = False
+        for c in range(0, 5):
+            for y in p2:
+                if len(p2) == 1:
+                    break
+                if y[c] > big[c]:
+                    big = y
+                    if len(p2) == 1:
+                        break
+                elif y[c] < big[c]:
+                    flag = True
+                    if len(p2) == 1:
+                        break
+                else:
+                    continue
+                if not flag:
+                    break
+        x = big[0]
+        x2 = big[2]
+        x1 = big[-1]
+        target = {}
+        big_counted = False
+        l = lambda a, sort_func: sorted(a, key=sort_func, reverse=True)
+        sort_func = lambda a: a % 20
+        for y in b:
+            if x in y and x2 in y and len(y[x]) == 2 and len(y[x2]) == 2 and y.get(x1):
+                target = copy.copy(y)
+        hand = []
+        r = []
+        while len(hand) != 5:
+            for x in target:
+                if len(target[x]) == 2:
+                    r += target[x]
+                    if len(r) == 4:
+                        r = l(r, sort_func)
+                else:
+                    hand += target[x]
+                if len(r + hand) == 5:
+                    return r + hand
     else:
         return False
 
@@ -623,11 +660,11 @@ CompareHands = []
 # individual cards, ordered by the player:
 card_groups = [[10, 11], [23, 27]]
 # cards on the table:
-common = [12, 13, 2, 62, 14]
+common = [12, 30, 31, 62, 14]
 """ [3, 7], [5, 7]
     [2, 14, 3, 6, 5] """
 
-# makes the player id, hand type, and hand.
+# makes the player id, hand type, and hand:
 for x in card_groups:
     d = decks(x, common)
     t.append(card_groups.index(x) + 1)
