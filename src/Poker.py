@@ -658,9 +658,9 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          73: "DK", 74: "DA"}
 CompareHands = []
 # individual cards, ordered by the player:
-card_groups = [[10, 11], [23, 27]]
+card_groups = [[10, 43], [23, 32]]
 # cards on the table:
-common = [12, 30, 31, 62, 14]
+common = [13, 12, 11, 62, 14]
 """ [3, 7], [5, 7]
     [2, 14, 3, 6, 5] """
 
@@ -721,6 +721,9 @@ for x in l:
                 l.remove(x)
 
 if len(l) == 1:
+    l1 = l[0][2]
+    for x in l1:
+        l1[l1.index(x)] = cards[x]
     print(f"The winner is Player {str(l[0][0])}. His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
 else:
     for x in l:
