@@ -724,7 +724,7 @@ if len(l) == 1:
     l1 = l[0][2]
     for x in l1:
         l1[l1.index(x)] = cards[x]
-    print(f"The winner is Player {str(l[0][0])}. His hand was a {str(hands[l[0][1]])}. His actual hand was {str(l[0][2])}.")
+    print(f"The winner is Player {str(l[0][0])}. His hand was a {str(hands[l[0][1]])}. His cards were {str(l[0][2])}.")
 else:
     for x in l:
         CompareHands.append(x)
