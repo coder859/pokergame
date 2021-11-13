@@ -1,5 +1,6 @@
 import copy
 from itertools import combinations
+import random
 
 
 def decks(m, c):
@@ -343,7 +344,6 @@ def straight(d):
                 return big
 
 
-
 def full_house(d):
     b = []
     b1 = {}
@@ -641,11 +641,8 @@ def compare(c):
     return c
 
 
-l = []
-t = []
+
 a = {}
-m = 0
-m1 = []
 hands = {1: "High Card", 2: "Pair", 3: "Two Pair", 4: "Three of a Kind", 5: "Straight", 6: "Flush", 7: "Full House",
          8: "Four of a Kind", 9: "Straight Flush", 10: "Royal Flush"}
 cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9", 10: "S10", 11: "SJ", 12: "SQ",
@@ -656,15 +653,42 @@ cards = {2: "S2", 3: "S3", 4: "S4", 5: "S5", 6: "S6", 7: "S7", 8: "S8", 9: "S9",
          53: "HK", 54: "HA",
          62: "D2", 63: "D3", 64: "D4", 65: "D5", 66: "D6", 67: "D7", 68: "D8", 69: "D9", 70: "D10", 71: "DJ", 72: "DQ",
          73: "DK", 74: "DA"}
-CompareHands = []
+card_nums = list(cards.keys())
+num_players = int(input("How many players should the computer distribute the cards to?\n"))
 # individual cards, ordered by the player:
-card_groups = [[10, 43], [23, 32]]
-# cards on the table:
-common = [13, 12, 11, 62, 14]
-""" [3, 7], [5, 7]
-    [2, 14, 3, 6, 5] """
+duplicates = True
+card_selection = random.sample(card_nums, (num_players * 2) + 5)
+player_cards = []
+breaker = 0
+card_groups = []
+for y in range(num_players):
+    for x in card_selection:
+        player_cards.append(x)
+        card_selection.remove(x)
+        breaker += 1
+        if breaker == 2:
+            breaker = 0
+            break
+    card_groups.append(copy.copy(player_cards))
+    player_cards.clear()
 
-# makes the player id, hand type, and hand:
+# cards on the table:
+common = copy.copy(card_selection)
+common1 = copy.copy(card_selection)
+for x in common1:
+    common1[common1.index(x)] = cards[x]
+print("Cards on the table: " + str(common1) + "\n")
+card_groups1 = copy.deepcopy(card_groups)
+for x in card_groups1:
+    for y in x:
+        card_groups1[card_groups1.index(x)][x.index(y)] = cards[y]
+for x in range(num_players):
+    print("Cards for Player " + str(x+1) + ":")
+    print(str(card_groups1[x-1]) + "\n")
+
+# makes the player id, hand, and cards:
+l = []
+t = []
 for x in card_groups:
     d = decks(x, common)
     t.append(card_groups.index(x) + 1)
@@ -726,7 +750,8 @@ if len(l) == 1:
         l1[l1.index(x)] = cards[x]
     print(f"The winner is Player {str(l[0][0])}. His hand was a {str(hands[l[0][1]])}. His cards were {str(l[0][2])}.")
 else:
+    CompareHands = []
     for x in l:
         CompareHands.append(x)
-    c = compare(CompareHands)
-    print(f"The winner(s) are {str(c)[1:-1]}!")
+    compare_hands = compare(CompareHands)
+    print(f"The winner(s) are {str(compare_hands)[1:-1]}!")
